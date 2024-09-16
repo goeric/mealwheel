@@ -1,0 +1,119 @@
+/* styles.css */
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  header, footer {
+    background-color: #2d3e50;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+  }
+  
+  header h1 {
+    font-size: 2.5rem;
+  }
+  
+  footer p {
+    font-size: 1rem;
+  }
+  
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .wheel-container {
+    text-align: center;
+    margin-top: 40px;
+  }
+  
+  #wheelCanvas {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  #spinButton {
+    margin-top: 20px;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    background-color: #ff6f61;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  #spinButton:hover {
+    background-color: #e65c50;
+  }
+  
+  #selectedRestaurant {
+    margin-top: 30px;
+    font-size: 1.5rem;
+    color: #ff6f61;
+  }
+  
+  .restaurant-list {
+    margin-top: 50px;
+  }
+  
+  .restaurant-list h3 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  #restaurantList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .restaurant-item {
+    flex: 1 1 200px;
+    max-width: 250px;
+    margin: 10px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .restaurant-item input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 10px;
+  }
+  
+  .restaurant-item label {
+    font-size: 1.1rem;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    header h1 {
+      font-size: 2rem;
+    }
+  
+    #spinButton {
+      width: 100%;
+    }
+  
+    .restaurant-item {
+      flex: 1 1 100%;
+    }
+  }
