@@ -10,8 +10,8 @@ window.onerror = function (message, source, lineno, colno, error) {
 console.log('app.js is loaded');
 
 // Replace with your actual Spreadsheet ID and Sheet Name
-const SPREADSHEET_ID = '1Yum89FFIcJgZ7kH6ZTbfq_5fhxktSu4Cg-juFLkoqts'; // Replace with your actual Spreadsheet ID
-const SHEET_NAME = 'Sheet1'; // Replace with your actual sheet name
+const SPREADSHEET_ID = '1Yum89FFIcJgZ7kH6ZTbfq_5fhxktSu4Cg-juFLkoqts';
+const SHEET_NAME = 'Sheet1';
 
 // Adjust the query if your data is not in column A
 const QUERY = encodeURIComponent('SELECT A');
@@ -28,6 +28,17 @@ let restaurants = [];
 let excludedRestaurants = [];
 let wheel;
 let wheelSpinning = false; // Flag to track if the wheel is spinning
+
+// Function to get a cryptographically secure random integer between min and max (inclusive)
+function getRandomInt(min, max) {
+  const cryptoObj = window.crypto || window.msCrypto; // For IE11 support
+  const range = max - min + 1;
+  const maxRange = 65536;
+  const randomUint = new Uint16Array(1);
+  cryptoObj.getRandomValues(randomUint);
+  const randomNumber = randomUint[0] / maxRange;
+  return Math.floor(randomNumber * range) + min;
+}
 
 // Initialize the application
 function init() {
@@ -61,10 +72,12 @@ function handleData(jsonData) {
     console.log('rows:', rows);
 
     // Extract restaurant names from the rows
-    restaurants = rows.map(row => {
-      const cell = row.c[0];
-      return cell ? cell.v : null;
-    }).filter(Boolean);
+    restaurants = rows
+      .map((row) => {
+        const cell = row.c[0];
+        return cell ? cell.v : null;
+      })
+      .filter(Boolean);
 
     console.log('restaurants array:', restaurants);
 
@@ -88,7 +101,7 @@ function renderRestaurantList() {
 
   container.innerHTML = '';
 
-  restaurants.forEach(restaurant => {
+  restaurants.forEach((restaurant) => {
     console.log('Adding restaurant to list:', restaurant);
 
     const itemDiv = document.createElement('div');
@@ -104,7 +117,7 @@ function renderRestaurantList() {
       console.log(`Checkbox for ${restaurant} changed, checked:`, checkbox.checked);
 
       if (checkbox.checked) {
-        excludedRestaurants = excludedRestaurants.filter(r => r !== restaurant);
+        excludedRestaurants = excludedRestaurants.filter((r) => r !== restaurant);
       } else {
         excludedRestaurants.push(restaurant);
       }
@@ -126,7 +139,7 @@ function renderRestaurantList() {
 function createWheel() {
   console.log('createWheel() is called');
 
-  const availableRestaurants = restaurants.filter(r => !excludedRestaurants.includes(r));
+  const availableRestaurants = restaurants.filter((r) => !excludedRestaurants.includes(r));
   console.log('Available restaurants for the wheel:', availableRestaurants);
 
   if (availableRestaurants.length === 0) {
@@ -149,8 +162,8 @@ function createWheel() {
 
   // Clear existing wheel if any
   if (wheel) {
-    wheel.stopAnimation(false); // Stop the animation, false as param so callback is not invoked
     if (wheel.animation && wheel.animation.tween) {
+      wheel.stopAnimation(false); // Stop the animation
       wheel.animation.tween.kill(); // Kill the TweenMax animation instance
     }
     wheel = null;
@@ -162,6 +175,7 @@ function createWheel() {
     segments: segments,
     lineWidth: 2,
     rotationAngle: 0, // Reset rotation angle
+    // Let Winwheel.js handle animation initialization
     animation: {
       type: 'spinToStop',
       duration: 5,
@@ -189,9 +203,11 @@ function drawPointer() {
     return;
   }
 
-  // Clear previous pointer
+  // Clear previous drawing
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   wheel.draw(); // Redraw the wheel
+
   // Draw the pointer
   ctx.fillStyle = '#333';
   ctx.beginPath();
@@ -209,7 +225,7 @@ function displayResult(indicatedSegment) {
 
   document.getElementById('selectedRestaurant').innerText = `You should eat at: ${indicatedSegment.text}`;
 
-  // Only reset the spinning flag
+  // Reset the spinning flag
   wheelSpinning = false; // Allow the wheel to be spun again
 }
 
@@ -220,24 +236,24 @@ if (spinButton) {
     console.log('"Spin the Wheel!" button clicked');
     if (wheel) {
       if (!wheelSpinning) {
-        // Properly stop any existing animation and reset the wheel
-        wheel.stopAnimation(false); // Stop the animation; false to prevent callback
+        // Only stop animation if it exists and is running
         if (wheel.animation && wheel.animation.tween) {
+          wheel.stopAnimation(false); // Stop the animation
           wheel.animation.tween.kill(); // Kill the TweenMax animation instance
         }
-        wheel.rotationAngle = 0; // Reset rotation angle
-        wheel.draw(); // Redraw the wheel at the starting position
-        drawPointer(); // Redraw the pointer
 
-        // Set up the animation for the new spin
-        wheel.animation = {
-          type: 'spinToStop',
-          duration: 5,
-          spins: 8,
-          callbackFinished: displayResult,
-          callbackAfter: drawPointer,
-        };
+        // Randomize spins and duration using Crypto API
+        const randomSpins = getRandomInt(5, 9); // Random integer between 5 and 9
+        const randomDuration = getRandomInt(4, 7); // Random integer between 4 and 7 seconds
+        wheel.animation.spins = randomSpins;
+        wheel.animation.duration = randomDuration;
 
+        // Apply random rotation angle
+        wheel.rotationAngle = Math.random() * 360;
+        wheel.draw();
+        drawPointer();
+
+        // Start the animation
         wheel.startAnimation();
         wheelSpinning = true;
       } else {
